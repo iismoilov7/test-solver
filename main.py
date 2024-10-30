@@ -41,15 +41,16 @@ def process_test(driver, url):
                     print(f"{GREEN}Ответы получены{RESET}")
                     break
 
-
+        with open("driver.html", "w", encoding="UTF-8") as f:
+            f.write(driver.page_source)
         handle_answers(driver, driver.page_source)
+        input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
+        driver.quit()
     except Exception as e:
         print(f"{RED}Какая-то ошибка :(\n{e}  {RESET}")
         input("Нажмите Enter чтобы закрыть: ")
         driver.quit()
-    finally:
-        input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
-        driver.quit()
+
 
 def handle_answers(driver, html_content):
     driver.delete_all_cookies()
@@ -70,15 +71,16 @@ def handle_answers(driver, html_content):
             break
 
         question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
-        question_id = driver.find_element(By.CSS_SELECTOR, f"input[type='submit'][value='{question_number}'][onclick='return OnMoveButtonClick(this);']").get_attribute("name")
-        # print(question_id) Для дебага
+        randomQuestionId = driver.find_element(By.CSS_SELECTOR, '[onclick="OnClickRadio(this)"]').get_attribute("id")
 
-        answer_input = soup.select(f"#dq_{question_id.replace('btnMoveToQ_', '')} input:has(+.indicator.icon-rb.otp-item-ans-correct)")
+
+        answer_input = soup.select(f".otp-item-view-question:has([id='{randomQuestionId}']) input:has(+.indicator.icon-rb.otp-item-ans-correct)")
         if not answer_input:
-            answer_input = soup.select(f"#dq_{question_id.replace('btnMoveToQ_', '')} input:has(+.indicator.icon-rb-checked.otp-item-ans-correct)")
+            answer_input = soup.select(f".otp-item-view-question:has([id='{randomQuestionId}']) input:has(+.indicator.icon-rb-checked.otp-item-ans-correct)")
 
         answer_id = answer_input[0].get("id")
-        # print(answer_id) Для дебага
+        # Для дебага
+        print(answer_id)
 
         if random.randint(0, 100) > fail_percentage:
             print(f"{GREEN}Вопрос {question_number}{RESET}")
