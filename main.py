@@ -41,8 +41,8 @@ def process_test(driver, url):
                     print(f"{GREEN}Ответы получены{RESET}")
                     break
 
-        with open("driver.html", "w", encoding="UTF-8") as f:
-            f.write(driver.page_source)
+        # with open("driver.html", "w", encoding="UTF-8") as f:
+        #     f.write(driver.page_source)
         handle_answers(driver, driver.page_source)
         input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
         driver.quit()
@@ -80,8 +80,10 @@ def handle_answers(driver, html_content):
 
         answer_id = answer_input[0].get("id")
         # Для дебага
-        print(answer_id)
-
+        # print(answer_id)
+        sleep_time = random.randint(sleep_time_from, sleep_time_till)
+        print(f"Жду {sleep_time} секунд перед тем как отвечать")
+        time.sleep(sleep_time)
         if random.randint(0, 100) > fail_percentage:
             print(f"{GREEN}Вопрос {question_number}{RESET}")
             driver.execute_script(f"document.querySelector('[id=\"{answer_id}\"]').click()")
@@ -130,6 +132,8 @@ if __name__ == "__main__":
 """)
     print("\033]8;;https://github.com/iismoilov7\033\\Автор :3\033]8;;\033\\")
     url = input('Введите ссылку на тест: ')
+    sleep_time_from = input('Введите время сна перед ответом в секундах на вопрос от: ')
+    sleep_time_till = input('Введите время сна перед ответом в секундах на вопрос до: ')
     fail_percentage = 20 # Это лучше не трогать)
 
     profile = FirefoxProfile()
