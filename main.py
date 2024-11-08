@@ -8,6 +8,16 @@ import time
 import random
 
 
+def click_first_visible_element(driver, by, selector):
+    elements = driver.find_elements(by, selector)
+    
+    for element in elements:
+        if element.is_displayed():
+            element.click()
+            return
+
+    # print("Нет видимых элементов с данным селектором.")
+
 def click_element(driver, by, value):
     try:
         elements = driver.find_elements(by, value)
@@ -19,37 +29,41 @@ def click_element(driver, by, value):
         print(f"{RED}Ошибка при нажатии: {e}{RESET}")
 
 def process_test(driver, url):
-    try:
-        driver.get(url)
-        while True:
-            click_element(driver, By.ID, 'btnNext')
-            click_element(driver, By.CSS_SELECTOR, '.otp-input.s-view-input.otp-radiobutton')
+    driver.get(url)
+
+    while True:
+        click_element(driver, By.ID, 'btnNext')
+        click_element(driver, By.CSS_SELECTOR, '.otp-input.s-view-input.otp-radiobutton')
+        click_element(driver, By.ID, 'btnNext')
+
+        time.sleep(1)
+
+        question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
+
+        print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
+
+        if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            time.sleep(1)
             click_element(driver, By.ID, 'btnNext')
             time.sleep(1)
-            question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
-            print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
+
             if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-                click_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
-                time.sleep(1)
-                click_element(driver, By.ID, 'btnNext')
-                time.sleep(1)
+                click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+                time.sleep(4)
+                driver.execute_script("showQuestions()")
+                print(f"{GREEN}Ответы получены{RESET}")
+                break
 
-                if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-                    click_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
-                    time.sleep(4)
-                    driver.execute_script("showQuestions()")
-                    print(f"{GREEN}Ответы получены{RESET}")
-                    break
+    # Для дебага
+    # with open("driver.html", "w", encoding="UTF-8") as f:
+    #     f.write(driver.page_source)
 
-        # with open("driver.html", "w", encoding="UTF-8") as f:
-        #     f.write(driver.page_source)
-        handle_answers(driver, driver.page_source)
-        input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
-        driver.quit()
-    except Exception as e:
-        print(f"{RED}Какая-то ошибка :(\n{e}  {RESET}")
-        input("Нажмите Enter чтобы закрыть: ")
-        driver.quit()
+    handle_answers(driver, driver.page_source)
+    input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
+    driver.quit()
+
 
 
 def handle_answers(driver, html_content):
@@ -67,7 +81,7 @@ def handle_answers(driver, html_content):
     while True:
         time.sleep(1)
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
             break
 
         question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
@@ -79,8 +93,10 @@ def handle_answers(driver, html_content):
             answer_input = soup.select(f".otp-item-view-question:has([id='{randomQuestionId}']) input:has(+.indicator.icon-rb-checked.otp-item-ans-correct)")
 
         answer_id = answer_input[0].get("id")
+        
         # Для дебага
         # print(answer_id)
+
         sleep_time = random.randint(sleep_time_from, sleep_time_till)
         print(f"Жду {sleep_time} секунд перед тем как отвечать")
         time.sleep(sleep_time)
@@ -93,7 +109,7 @@ def handle_answers(driver, html_content):
 
         click_element(driver, By.ID, 'btnNext')
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
             break
         click_element(driver, By.ID, 'btnNext')
 
@@ -132,8 +148,8 @@ if __name__ == "__main__":
 """)
     print("\033]8;;https://github.com/iismoilov7\033\\Автор :3\033]8;;\033\\")
     url = input('Введите ссылку на тест: ')
-    sleep_time_from = input('Введите время сна перед ответом в секундах на вопрос от: ')
-    sleep_time_till = input('Введите время сна перед ответом в секундах на вопрос до: ')
+    sleep_time_from = int(input('Введите время сна перед ответом в секундах на вопрос от: '))
+    sleep_time_till = int(input('Введите время сна перед ответом в секундах на вопрос до: '))
     fail_percentage = 20 # Это лучше не трогать)
 
     profile = FirefoxProfile()
