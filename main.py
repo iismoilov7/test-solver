@@ -32,37 +32,38 @@ def click_element(driver, by, value):
 
 def process_test(driver, url):
     driver.get(url)
-
+    question_number = 0
+    click_first_visible_element(driver, By.ID, 'btnNext')
+    
     while True:
-        click_first_visible_element(driver, By.ID, 'btnNext')
-        click_element(driver, By.CSS_SELECTOR, '.otp-input.s-view-input.otp-radiobutton')
-        click_first_visible_element(driver, By.ID, 'btnNext')
-
-        time.sleep(1)
-
         question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
+        click_element(driver, By.CSS_SELECTOR, '.otp-input.s-view-input.otp-radiobutton')        
+        click_element(driver, By.ID, 'btnNext')
+        time.sleep(0.3)
 
-        print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
+        if int(question_number) != 100:
+            click_element(driver, By.ID, 'btnNext')
+
 
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
             click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
-            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
+            time.sleep(3)
+            click_element(driver, By.ID, 'btnNext')
+            time.sleep(1)
             click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
             time.sleep(1)
-            click_first_visible_element(driver, By.ID, 'btnNext')
+            driver.execute_script("showQuestions()")
             time.sleep(1)
+            print(f"{GREEN}Ответы получены{RESET}")
+            break
 
-            if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-                click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
-                time.sleep(4)
-                driver.execute_script("showQuestions()")
-                print(f"{GREEN}Ответы получены{RESET}")
-                break
+        print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
+
+
 
     # Для дебага
     # with open("driver.html", "w", encoding="UTF-8") as f:
     #     f.write(driver.page_source)
-
     handle_answers(driver, driver.page_source)
     input("Тест успешно пройден, откройте браузер, введите свои данные и можете нажать Enter")
     driver.quit()
