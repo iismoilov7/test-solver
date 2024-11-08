@@ -45,14 +45,15 @@ def process_test(driver, url):
         print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
 
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
-            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
             time.sleep(1)
             click_first_visible_element(driver, By.ID, 'btnNext')
             time.sleep(1)
 
             if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-                click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
+                click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
                 time.sleep(4)
                 driver.execute_script("showQuestions()")
                 print(f"{GREEN}Ответы получены{RESET}")
@@ -83,7 +84,7 @@ def handle_answers(driver, html_content):
     while True:
         time.sleep(1)
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
             break
 
         question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
@@ -111,7 +112,7 @@ def handle_answers(driver, html_content):
 
         click_first_visible_element(driver, By.ID, 'btnNext')
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
+            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn:not(:disabled):not(.disabled).btn-primary')
             break
         click_first_visible_element(driver, By.ID, 'btnNext')
 
@@ -150,9 +151,9 @@ if __name__ == "__main__":
 """)
     print("\033]8;;https://github.com/iismoilov7\033\\Автор :3\033]8;;\033\\")
     url = input('Введите ссылку на тест: ')
-    sleep_time_from = int(input('Введите время сна перед ответом в секундах на вопрос от: '))
-    sleep_time_till = int(input('Введите время сна перед ответом в секундах на вопрос до: '))
-    fail_percentage = 20 # Это лучше не трогать)
+    sleep_time_from = int(input('Введите минимальное время сна (в секундах) перед ответом: '))
+    sleep_time_till = int(input('Введите максимальное время сна (в секундах) перед ответом: '))
+    fail_percentage = int(input('Введите процент вероятности ошибки при ответе: '))
 
     profile = FirefoxProfile()
     profile.set_preference("permissions.default.image", 2)
