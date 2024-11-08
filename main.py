@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.service import Service
@@ -32,9 +34,9 @@ def process_test(driver, url):
     driver.get(url)
 
     while True:
-        click_element(driver, By.ID, 'btnNext')
+        click_first_visible_element(driver, By.ID, 'btnNext')
         click_element(driver, By.CSS_SELECTOR, '.otp-input.s-view-input.otp-radiobutton')
-        click_element(driver, By.ID, 'btnNext')
+        click_first_visible_element(driver, By.ID, 'btnNext')
 
         time.sleep(1)
 
@@ -43,14 +45,14 @@ def process_test(driver, url):
         print(f"Ищу ответы на тесты...{GREEN}{question_number}/100{RESET}")
 
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
-            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
+            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
             time.sleep(1)
-            click_element(driver, By.ID, 'btnNext')
+            click_first_visible_element(driver, By.ID, 'btnNext')
             time.sleep(1)
 
             if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-                click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+                click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
                 time.sleep(4)
                 driver.execute_script("showQuestions()")
                 print(f"{GREEN}Ответы получены{RESET}")
@@ -76,12 +78,12 @@ def handle_answers(driver, html_content):
     driver.get(url)
 
     soup = BeautifulSoup(html_content, 'html.parser')
-    click_element(driver, By.ID, 'btnNext')
+    click_first_visible_element(driver, By.ID, 'btnNext')
 
     while True:
         time.sleep(1)
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
             break
 
         question_number = driver.find_element(By.CSS_SELECTOR, ".num").text
@@ -107,11 +109,11 @@ def handle_answers(driver, html_content):
             print(f"{RED}Вопрос {question_number}{RESET}")
             driver.execute_script(f"document.querySelector('.item.otp-row-1:not([id=\"{answer_id}\"]) input').click()")
 
-        click_element(driver, By.ID, 'btnNext')
+        click_first_visible_element(driver, By.ID, 'btnNext')
         if driver.find_elements(By.CSS_SELECTOR, ".modal-body"):
-            click_first_visible_element(driver, By.CSS_SELECTOR, '.btn.btn-sm.btn-primary')
+            click_first_visible_element(driver, By.XPATH, '/html/body/div[6]/div/div/div[2]/button[1]')
             break
-        click_element(driver, By.ID, 'btnNext')
+        click_first_visible_element(driver, By.ID, 'btnNext')
 
 if __name__ == "__main__":
     print("""\033[38;2;183;150;120;48;2;56;62;39m▄\033[38;2;169;137;109;48;2;49;61;33m▄\033[38;2;160;133;106;48;2;38;46;23m▄\033[38;2;184;157;128;48;2;156;140;127m▄\033[38;2;166;145;125;48;2;158;144;133m▄\033[38;2;155;135;123;48;2;159;146;137m▄\033[38;2;178;159;133;48;2;158;146;134m▄\033[38;2;164;143;121;48;2;157;144;135m▄\033[38;2;158;138;124;48;2;150;137;128m▄\033[38;2;192;172;138;48;2;130;116;102m▄\033[38;2;171;149;117;48;2;91;87;61m▄\033[38;2;178;157;133;48;2;51;56;25m▄\033[38;2;202;181;149;48;2;94;96;64m▄\033[38;2;190;166;129;48;2;205;184;152m▄\033[38;2;218;195;164;48;2;208;187;158m▄\033[38;2;212;189;157;48;2;183;166;140m▄\033[38;2;200;177;143;48;2;202;181;151m▄\033[38;2;203;179;145;48;2;213;192;162m▄\033[38;2;195;170;137;48;2;197;175;150m▄\033[38;2;223;202;175;48;2;224;203;177m▄\033[38;2;212;188;160;48;2;218;197;170m▄\033[38;2;208;184;157;48;2;172;152;126m▄\033[38;2;216;191;160;48;2;202;176;141m▄\033[38;2;209;183;158;48;2;210;183;159m▄\033[38;2;201;178;146;48;2;127;120;90m▄\033[38;2;200;176;142;48;2;188;172;145m▄\033[38;2;201;180;149;48;2;163;147;122m▄\033[38;2;208;187;160;48;2;139;122;100m▄\033[38;2;213;194;163;48;2;124;107;87m▄\033[38;2;184;164;138;48;2;125;108;88m▄\033[38;2;214;195;165;48;2;145;128;104m▄\033[38;2;187;169;133;48;2;185;166;133m▄\033[38;2;184;167;137;48;2;184;167;136m▄\033[38;2;185;168;140;48;2;186;170;142m▄\033[38;2;187;167;140;48;2;188;171;143m▄\033[38;2;184;167;139;48;2;192;172;145m▄\033[38;2;185;168;140;48;2;191;174;146m▄\033[38;2;184;167;139;48;2;191;174;146m▄\033[38;2;186;169;141;48;2;191;174;146m▄\033[38;2;185;168;140;48;2;191;174;146m▄\033[38;2;184;167;139;48;2;192;175;147m▄\033[38;2;186;169;141;48;2;192;175;147m▄\033[38;2;187;170;142;48;2;196;176;149m▄\033[38;2;188;171;143;48;2;194;177;149m▄\033[38;2;190;170;143;48;2;190;173;145m▄\033[38;2;191;174;146;48;2;191;171;144m▄\033[m
